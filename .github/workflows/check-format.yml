@@ -1,0 +1,19 @@
+name: Check dprint formatting
+
+on: [pull_request]
+
+jobs:
+  dprint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dprint
+        run: |
+          npm install -g dprint
+
+      - name: Run dprint check
+        run: |
+          dprint check
