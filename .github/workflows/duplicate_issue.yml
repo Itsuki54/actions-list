@@ -32,7 +32,7 @@ jobs:
           issue_title="${{ github.event.issue.title }}"
           issue_body="${{ github.event.issue.body }}"
 
-          labels=$(echo '${{ toJson(github.event.issue.labels.*.name) }}')
+          labels=$(echo '${{ toJson(github.event.issue.labels.*.name) }}' | jq 'map(select(. != "duplicate-to-other-repos"))')
 
           for repo in "${repos[@]}"; do
             curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
