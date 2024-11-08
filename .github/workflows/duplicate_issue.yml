@@ -1,0 +1,43 @@
+name: Duplicate Issue to Other Repositories
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  duplicate_issue:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'duplicate-to-other-repos')
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Create Issue in Other Repositories
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          repos=("Itsuki54/kizino_niwa" "Itsuki54/portfolio")
+          issue_title="${{ github.event.issue.title }}"
+          issue_body="${{ github.event.issue.body }}"
+
+          labels=$(echo '${{ toJson(github.event.issue.labels.*.name) }}')
+
+          for repo in "${repos[@]}"; do
+            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/$repo/issues \
+              -d "{\"title\":\"$issue_title\", \"body\":\"$issue_body\", \"labels\": $labels}"
+          done
+
+      - name: Remove Label from Original Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          issue_number=${{ github.event.issue.number }}
+          repo="${{ github.repository }}"
+          label="duplicate-to-other-repos"
+
+          curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/$repo/issues/$issue_number/labels/$label
