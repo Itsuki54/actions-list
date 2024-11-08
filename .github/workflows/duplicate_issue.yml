@@ -10,11 +10,10 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'duplicate-to-other-repos')
 
     steps:
-      - name: Check out the repository
+      - name: リポジトリのチェックアウト
         uses: actions/checkout@v3
-      - name: Debug TOKEN
-        run: echo ${{ secrets.TOKEN }}
-      - name: Create Issue in Other Repositories
+
+      - name: 他のリポジトリにIssueを作成
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         run: |
@@ -25,13 +24,13 @@ jobs:
           labels=$(echo '${{ toJson(github.event.issue.labels.*.name) }}')
 
           for repo in "${repos[@]}"; do
-            curl -X POST -H "Authorization: token $TOKEN" \
+            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
               -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/$repo/issues \
               -d "{\"title\":\"$issue_title\", \"body\":\"$issue_body\", \"labels\": $labels}"
           done
 
-      - name: Remove Label from Original Issue
+      - name: 元のIssueからラベルを削除
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         run: |
@@ -39,6 +38,6 @@ jobs:
           repo="${{ github.repository }}"
           label="duplicate-to-other-repos"
 
-          curl -X DELETE -H "Authorization: token $TOKEN" \
+          curl -X DELETE -H "Authorization: token ${GITHUB_TOKEN}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$repo/issues/$issue_number/labels/$label
