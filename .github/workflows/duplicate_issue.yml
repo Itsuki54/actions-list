@@ -2,7 +2,7 @@ name: Duplicate Issue to Other Repositories
 
 on:
   issues:
-    types: [opened, labeled]
+    types: [opened]
 
 jobs:
   duplicate_issue:
@@ -10,9 +10,9 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'duplicate-to-other-repos')
 
     steps:
-      - name: リポジトリのチェックアウト
+      - name: Checkout repository
         uses: actions/checkout@v3
-      - name: 元のIssueからラベルを削除
+      - name: Remove label
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         run: |
@@ -24,7 +24,7 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$repo/issues/$issue_number/labels/$label
 
-      - name: 他のリポジトリにIssueを作成
+      - name: Duplicate issue
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         run: |
