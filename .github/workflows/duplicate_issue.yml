@@ -27,8 +27,9 @@ jobs:
       - name: Duplicate issue
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          REPOS: "Itsuki54/kizino_niwa Itsuki54/portfolio"
         run: |
-          repos=("Itsuki54/kizino_niwa" "Itsuki54/portfolio")
+          repos=( $REPOS )
           issue_title="${{ github.event.issue.title }}"
           issue_body="${{ github.event.issue.body }}"
 
