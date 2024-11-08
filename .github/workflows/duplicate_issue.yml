@@ -12,6 +12,17 @@ jobs:
     steps:
       - name: リポジトリのチェックアウト
         uses: actions/checkout@v3
+      - name: 元のIssueからラベルを削除
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          issue_number=${{ github.event.issue.number }}
+          repo="${{ github.repository }}"
+          label="duplicate-to-other-repos"
+
+          curl -X DELETE -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/$repo/issues/$issue_number/labels/$label
 
       - name: 他のリポジトリにIssueを作成
         env:
@@ -29,15 +40,3 @@ jobs:
               https://api.github.com/repos/$repo/issues \
               -d "{\"title\":\"$issue_title\", \"body\":\"$issue_body\", \"labels\": $labels}"
           done
-
-      - name: 元のIssueからラベルを削除
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        run: |
-          issue_number=${{ github.event.issue.number }}
-          repo="${{ github.repository }}"
-          label="duplicate-to-other-repos"
-
-          curl -X DELETE -H "Authorization: token ${GITHUB_TOKEN}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$repo/issues/$issue_number/labels/$label
