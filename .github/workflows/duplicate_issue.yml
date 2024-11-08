@@ -12,7 +12,8 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
-
+      - name: Debug TOKEN
+        run: echo ${{ secrets.TOKEN }}
       - name: Create Issue in Other Repositories
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
