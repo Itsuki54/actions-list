@@ -1,0 +1,40 @@
+name: Check Kebab Case Filenames
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  check_filenames:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: List files in PR
+        id: list_files
+        run: |
+          files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+          echo "files=$files" >> $GITHUB_ENV
+
+      - name: Validate filenames
+        id: validate_filenames
+        run: |
+          invalid_files=()
+          for file in $files; do
+            # Check if the filename is in kebab-case
+            if [[ ! "$(basename "$file")" =~ ^[a-z0-9-]+$ ]]; then
+              invalid_files+=("$file")
+            fi
+          done
+
+          if [ ${#invalid_files[@]} -ne 0 ]; then
+            echo "Invalid filenames detected:"
+            for file in "${invalid_files[@]}"; do
+              echo "- $file"
+            done
+            exit 1
+          else
+            echo "All filenames are in kebab-case."
+          fi
