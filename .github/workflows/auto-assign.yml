@@ -1,0 +1,22 @@
+name: Auto Assign and Review
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  assign-and-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Auto-assign PR author
+        uses: actions-ecosystem/action-auto-assign@v1
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          assignee: ${{ github.actor }}
+
+      - name: Request specific reviewers
+        uses: kentaro-m/auto-assign-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reviewers: 'Itsuki54'  
