@@ -3,9 +3,6 @@ name: Duplicate Issue to Other Repositories
 on:
   issues:
     types: [opened]
-    
-permissions:
-  issues: write
 
 jobs:
   duplicate_issue:
@@ -15,7 +12,7 @@ jobs:
       REPOS: |
         Itsuki54/kizino_niwa 
         Itsuki54/portfolio
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
