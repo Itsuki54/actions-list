@@ -3,6 +3,9 @@ name: Duplicate Issue to Other Repositories
 on:
   issues:
     types: [opened]
+    
+permissions:
+  issues: write
 
 jobs:
   duplicate_issue:
