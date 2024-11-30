@@ -12,37 +12,38 @@ jobs:
       REPOS: |
         Itsuki54/kizino_niwa 
         Itsuki54/portfolio
-      TOKEN: ${{ secrets.TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Remove label
-        env:
-          GITHUB_TOKEN: env.TOKEN
         run: |
           issue_number=${{ github.event.issue.number }}
           repo="${{ github.repository }}"
           label="duplicate-to-other-repos"
 
-          curl -X DELETE -H "Authorization: token ${GITHUB_TOKEN}" \
+          curl -X DELETE \
+            -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/$repo/issues/$issue_number/labels/$label
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Duplicate issue
-        env:
-          GITHUB_TOKEN: env.TOKEN
-          REPOS: env.REPOS
         run: |
           repos=( $REPOS )
           issue_title="${{ github.event.issue.title }}"
           issue_body="${{ github.event.issue.body }}"
 
+          # Extract labels, excluding 'duplicate-to-other-repos'
           labels=$(echo '${{ toJson(github.event.issue.labels.*.name) }}' | jq 'map(select(. != "duplicate-to-other-repos"))')
 
           for repo in "${repos[@]}"; do
-            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
+            curl -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/$repo/issues \
               -d "{\"title\":\"$issue_title\", \"body\":\"$issue_body\", \"labels\": $labels}"
           done
-          
