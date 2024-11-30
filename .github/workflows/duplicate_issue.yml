@@ -8,13 +8,17 @@ jobs:
   duplicate_issue:
     runs-on: ubuntu-latest
     if: contains(github.event.issue.labels.*.name, 'duplicate-to-other-repos')
-
+    env:
+      REPOS: |
+        Itsuki54/kizino_niwa 
+        Itsuki54/portfolio
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Remove label
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: env.TOKEN
         run: |
           issue_number=${{ github.event.issue.number }}
           repo="${{ github.repository }}"
@@ -26,8 +30,8 @@ jobs:
 
       - name: Duplicate issue
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          REPOS: "Itsuki54/kizino_niwa Itsuki54/portfolio"
+          GITHUB_TOKEN: env.TOKEN
+          REPOS: env.REPOS
         run: |
           repos=( $REPOS )
           issue_title="${{ github.event.issue.title }}"
@@ -41,3 +45,4 @@ jobs:
               https://api.github.com/repos/$repo/issues \
               -d "{\"title\":\"$issue_title\", \"body\":\"$issue_body\", \"labels\": $labels}"
           done
+          
