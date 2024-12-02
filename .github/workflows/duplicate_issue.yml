@@ -11,6 +11,7 @@ jobs:
     env:
       REPOS: |
         Itsuki54/portfolio
+        Itsuki54/kizino_niwa
       GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     steps:
       - name: Checkout repository
