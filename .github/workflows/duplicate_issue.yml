@@ -53,3 +53,5 @@ jobs:
                 labels,
               });
             };
+permissions:
+  issues: write
