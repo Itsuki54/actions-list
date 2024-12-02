@@ -2,7 +2,7 @@ name: Duplicate Issue to Other Repositories
 
 on:
   issues:
-    types: [opened]
+    types: [opened, labeled]
 
 jobs:
   duplicate_issue:
@@ -10,12 +10,15 @@ jobs:
     if: contains(join(github.event.issue.labels.*.name), 'duplicate-to-other-repos')
     env:
       REPOS: |
-        Itsuki54/kizino_niwa
         Itsuki54/portfolio
-      GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        Itsuki54/kizino_niwa
+      GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          repository: algo-method/algo-method-4c-web
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Remove label
         uses: actions/github-script@v7
@@ -37,19 +40,23 @@ jobs:
 
       - name: Duplicate issue
         run: |
-          repos=( $REPOS )
+          IFS=$'\n' read -rd '' -a repos <<< "$REPOS"
+
           issue_title="${{ github.event.issue.title }}"
           issue_body="${{ github.event.issue.body }}"
 
-          # Extract labels, excluding 'duplicate-to-other-repos'
-          labels=$(echo '${{ toJson(github.event.issue.labels.*.name) }}' | jq 'map(select(. != "duplicate-to-other-repos"))')
+          labels=$(echo '${{ toJson(github.event.issue.labels.*.name) }}' | jq 'map(select(. != "duplicate-to-other-repos")) | @json')
 
           for repo in "${repos[@]}"; do
             curl -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/$repo/issues \
-              -d "{\"title\":\"$issue_title\", \"body\":\"$issue_body\", \"labels\": $labels}"
+              -d "$(jq -n --arg title "$issue_title" \
+                            --arg body "$issue_body" \
+                            --argjson labels "$labels" \
+                            '{title: $title, body: $body, labels: $labels}')"
           done
+
 permissions:
   issues: write
