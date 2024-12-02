@@ -24,7 +24,7 @@ jobs:
             const repo = context.repo;
             const label = "duplicate-to-other-repos";
 
-            await github.issues.removeLabel({
+            await github.rest.issues.removeLabel({
               owner: repo.owner,
               repo: repo.repo,
               issue_number: issueNumber,
