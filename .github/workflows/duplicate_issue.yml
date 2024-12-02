@@ -12,13 +12,13 @@ jobs:
       REPOS: |
         Itsuki54/portfolio
         Itsuki54/kizino_niwa
-      GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           repository: algo-method/algo-method-4c-web
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          token: ${{ secrets.TOKEN }}
 
       - name: Remove label
         uses: actions/github-script@v7
