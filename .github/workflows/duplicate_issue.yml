@@ -40,7 +40,7 @@ jobs:
 
       - name: Duplicate issue
         run: |
-          IFS=$'\n' read -rd '' -a repos <<< "$REPOS"
+          repos=(Itsuki54/portfolio Itsuki54/kizino_niwa)
 
           issue_title="${{ github.event.issue.title }}"
           issue_body="${{ github.event.issue.body }}"
