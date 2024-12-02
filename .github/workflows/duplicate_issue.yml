@@ -45,7 +45,7 @@ jobs:
 
             for (const repo of repos) {
               const [owner, repoName] = repo.split("/");
-              await github.issues.create({
+              await github.rest.issues.create({
                 owner,
                 repo: repoName,
                 title: issue.title,
