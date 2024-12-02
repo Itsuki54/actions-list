@@ -12,6 +12,7 @@ jobs:
       REPOS: |
         Itsuki54/kizino_niwa
         Itsuki54/portfolio
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
