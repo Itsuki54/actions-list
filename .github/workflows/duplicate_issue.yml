@@ -28,7 +28,7 @@ jobs:
               owner: repo.owner,
               repo: repo.repo,
               issue_number: issueNumber,
-              name: label,
+              name: [label],
             });
 
       - name: Duplicate issue
